@@ -9,11 +9,10 @@ using System;
 using System.Diagnostics;
 using System.Management;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Net.NetworkInformation;
 using System.Windows.Forms;
-using System.Buffers;
 
 class Program
 {
@@ -30,34 +29,35 @@ class Program
 
 class vars
 {
-    public const int        CNPDH                       = 5;
-    static public string    ip_GOOGLEDNS                = "8.8.8.8";
-    static public string    ip_CLOUDFLAREDNS            = "1.1.1.1";
-    static public string    ip_CONTROLDDNS              = "76.76.2.0";
-    static public string    ip_QUAD9                    = "9.9.9.9";
-    static public double    ms_GOOGLEDNS                = 1;
-    static public double    ms_CLOUDFLARE               = 1;
-    static public double    ms_CONTROLDDNS              = 1;
-    static public double    ms_QUAD9                    = 1;
-    static public string    connection_GOOGLE           = "NULL";
-    static public string    connection_CLOUDFLARE       = "NULL";
-    static public string    connection_CONTROLD         = "NULL";
-    static public string    connection_QUAD9            = "NULL";    
-    static public int       consoleW                    = 1000;
-    static public int       consoleH                    = 1000;
-    static public string    user                        = self_info.user();
-    static public string    m_name                      = self_info.m_name();
-    static public string    isInternet                  = self_info.isInternet("d");
-    static public string    GetWindowsEdition           = self_info.GetWindowsEdition();
-    static public string    GetWindowsVersion           = self_info.GetWindowsVersion();
-    static public string    GetWindowsBuildVersion      = self_info.GetWindowsBuildVersion();
-    static public string    GetWindowsArchitecture      = self_info.GetWindowsArchitecture();
-    static public string    cpu                         = self_info.cpu();
-    static public string    ram                         = self_info.ram().ToString();
-    static public int       i_ram                       = self_info.ram();
-    static public string    gpu                         = self_info.gpu(true);
-    static public string    gpuD                        = self_info.gpu(false);
-    static public string    users                       = self_info.userList();
+    public const int CNPDH = 5;
+    static public int ping_times = 5;
+    static public string ip_GOOGLEDNS = "8.8.8.8";
+    static public string ip_CLOUDFLAREDNS = "1.1.1.1";
+    static public string ip_CONTROLDDNS = "76.76.2.0";
+    static public string ip_QUAD9 = "9.9.9.9";
+    static public double ms_GOOGLEDNS = 1;
+    static public double ms_CLOUDFLARE = 1;
+    static public double ms_CONTROLDDNS = 1;
+    static public double ms_QUAD9 = 1;
+    static public string connection_GOOGLE = "NULL";
+    static public string connection_CLOUDFLARE = "NULL";
+    static public string connection_CONTROLD = "NULL";
+    static public string connection_QUAD9 = "NULL";
+    static public int consoleW = 1000;
+    static public int consoleH = 1000;
+    static public string user = self_info.user();
+    static public string m_name = self_info.m_name();
+    static public string isInternet = self_info.isInternet("d");
+    static public string GetWindowsEdition = self_info.GetWindowsEdition();
+    static public string GetWindowsVersion = self_info.GetWindowsVersion();
+    static public string GetWindowsBuildVersion = self_info.GetWindowsBuildVersion();
+    static public string GetWindowsArchitecture = self_info.GetWindowsArchitecture();
+    static public string cpu = self_info.cpu();
+    static public string ram = self_info.ram().ToString();
+    static public int i_ram = self_info.ram();
+    static public string gpu = self_info.gpu(true);
+    static public string gpuD = self_info.gpu(false);
+    static public string users = self_info.userList();
 }
 class self_console
 {
@@ -86,7 +86,7 @@ class self_console
     }
     public static void exit_choice(string c)
     {
-        switch(c)
+        switch (c)
         {
             case "0":
                 self_consoleShows.t00lbox();
@@ -114,7 +114,8 @@ class self_consoleShows
             Process process = new Process();
             process.StartInfo = startInfo;
             process.Start();
-        } catch
+        }
+        catch
         {
             MessageBox.Show("CAN'T START \"CREATOR\", Did U Compile creator in \"T00LBOX\\creator\\\"?", "WARNING...");
         }
@@ -123,13 +124,13 @@ class self_consoleShows
     {
         Console.Clear();
         Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
-        Console.Write    ($"{self_console.oNumber(1)}USER: " + $"{vars.user}".Pastel("#ff0000") + " | ".Pastel("#ff9e00"));
-        Console.Write    ($"{self_console.oNumber(2)}COMPUTERNAME: " + $"{vars.m_name}".Pastel("#ff0000") + " | ".Pastel("#ff9e00"));
+        Console.Write($"{self_console.oNumber(1)}USER: " + $"{vars.user}".Pastel("#ff0000") + " | ".Pastel("#ff9e00"));
+        Console.Write($"{self_console.oNumber(2)}COMPUTERNAME: " + $"{vars.m_name}".Pastel("#ff0000") + " | ".Pastel("#ff9e00"));
         Console.WriteLine($"{self_console.oNumber(3)}CONNECTION: " + $"{vars.isInternet}".Pastel("#ff0000"));
         Console.WriteLine($"{self_console.oNumber(4)}OS:   " + $" {vars.GetWindowsEdition} ".Pastel("#ffffff").PastelBg("#000fff") + $" {vars.GetWindowsVersion} ".Pastel("#000000").PastelBg("#f000ff") + $" {vars.GetWindowsBuildVersion} ".Pastel("#000000").PastelBg("#ff9700") + $" {vars.GetWindowsArchitecture} ".Pastel("#ffffff").PastelBg("#ff0000"));
         Console.WriteLine($"{self_console.oNumber(5)}CPU:  " + $"{vars.cpu}".Pastel("#ff0000"));
         Console.WriteLine($"{self_console.oNumber(6)}RAM:  " + $"{vars.ram}".Pastel("#ff0000") + $" ({Convert.ToInt32(god_i_hate_math.ConvertMegabytesToGigabytes(vars.i_ram))} GB)".Pastel("#ffffff"));
-        Console.Write    ($"{self_console.oNumber(7)}GPU:  " + $"{vars.gpu}".Pastel("#ff0000"));
+        Console.Write($"{self_console.oNumber(7)}GPU:  " + $"{vars.gpu}".Pastel("#ff0000"));
         Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
         Console.Write("\nEnter A Number: ".Pastel("ff0000"));
         string choice = Console.ReadLine();
@@ -196,7 +197,7 @@ class self_info
         foreach (ManagementObject obj in searcher.Get())
         {
             ulong totalMemory = Convert.ToUInt64(obj["TotalPhysicalMemory"]);
-            ramm = totalMemory / (1024 * 1024);     
+            ramm = totalMemory / (1024 * 1024);
         }
         return (int)ramm;
     }
@@ -232,10 +233,11 @@ class self_info
                 gpuDetailed += ("VideoMemoryType  -  " + obj["VideoMemoryType"] + "\n");
             }
         }
-        if(d)
+        if (d)
         {
             return gpu;
-        } else { return gpuDetailed; }
+        }
+        else { return gpuDetailed; }
     }
     public static string isInternet(string ip)
     {
@@ -255,7 +257,8 @@ class self_info
             {
                 return "FALSE";
             }
-        } else
+        }
+        else
         {
             try
             {
@@ -310,92 +313,109 @@ class self_info
     public static void googleDNS()
     {
         string host = vars.ip_GOOGLEDNS;
-        try
+        for (int i = 0; i < vars.ping_times + 1; i++)
         {
-            Ping pingSender = new Ping();
-            PingReply reply = pingSender.Send(host);
+            try
+            {
+                Ping pingSender = new Ping();
+                PingReply reply = pingSender.Send(host);
 
-            if (reply.Status == IPStatus.Success)
-            {
-                vars.ms_GOOGLEDNS = reply.RoundtripTime;
-                vars.connection_GOOGLE = "TRUE";
+                if (reply.Status == IPStatus.Success)
+                {
+                    vars.ms_GOOGLEDNS = reply.RoundtripTime;
+                    vars.connection_GOOGLE = "TRUE";
+                    break;
+                }
+                else
+                {
+                    vars.connection_GOOGLE = "FALSE";
+                }
             }
-            else
+            catch (PingException)
             {
-                vars.connection_GOOGLE = "FALSE";
+                vars.connection_GOOGLE = "TIMEOUT";
             }
-        } catch (PingException)
-        {
-            vars.connection_GOOGLE = "TIMEOUT";
         }
     }
     public static void cloudflareDNS()
     {
         string host = vars.ip_CLOUDFLAREDNS;
-        try
+        for (int i = 0; i < vars.ping_times + 1; i++)
         {
-            Ping pingSender = new Ping();
-            PingReply reply = pingSender.Send(host);
+            try
+            {
+                Ping pingSender = new Ping();
+                PingReply reply = pingSender.Send(host);
 
-            if (reply.Status == IPStatus.Success)
-            {
-                vars.ms_CLOUDFLARE = reply.RoundtripTime;
-                vars.connection_CLOUDFLARE = "TRUE";
+                if (reply.Status == IPStatus.Success)
+                {
+                    vars.ms_CLOUDFLARE = reply.RoundtripTime;
+                    vars.connection_CLOUDFLARE = "TRUE";
+                    break;
+                }
+                else
+                {
+                    vars.connection_CLOUDFLARE = "FALSE";
+                }
             }
-            else
+            catch (PingException)
             {
-                vars.connection_CLOUDFLARE = "FALSE";
+                vars.connection_CLOUDFLARE = "TIMEOUT";
             }
-        }
-        catch (PingException)
-        {
-            vars.connection_CLOUDFLARE = "TIMEOUT";
         }
     }
     public static void quad9DNS()
     {
         string host = vars.ip_QUAD9;
-        try
+        for (int i = 0; i < vars.ping_times + 1; i++)
         {
-            Ping pingSender = new Ping();
-            PingReply reply = pingSender.Send(host);
+            try
+            {
+                Ping pingSender = new Ping();
+                PingReply reply = pingSender.Send(host);
 
-            if (reply.Status == IPStatus.Success)
-            {
-                vars.ms_QUAD9 = reply.RoundtripTime;
-                vars.connection_QUAD9 = "TRUE";
+                if (reply.Status == IPStatus.Success)
+                {
+                    vars.ms_QUAD9 = reply.RoundtripTime;
+                    vars.connection_QUAD9 = "TRUE";
+                    break;
+                }
+                else
+                {
+                    vars.connection_QUAD9 = "FALSE";
+                }
             }
-            else
+            catch (PingException)
             {
-                vars.connection_QUAD9 = "FALSE";
+                vars.connection_QUAD9 = "TIMEOUT";
             }
-        }
-        catch (PingException)
-        {
-            vars.connection_QUAD9 = "TIMEOUT";
         }
     }
     public static void controldDNS()
     {
         string host = vars.ip_CONTROLDDNS;
-        try
+        for (int i = 0; i < vars.ping_times + 1; i++)
         {
-            Ping pingSender = new Ping();
-            PingReply reply = pingSender.Send(host);
+            try
+            {
+                Ping pingSender = new Ping();
+                PingReply reply = pingSender.Send(host);
 
-            if (reply.Status == IPStatus.Success)
-            {
-                vars.ms_CONTROLDDNS = reply.RoundtripTime;
-                vars.connection_CONTROLD = "TRUE";
+                if (reply.Status == IPStatus.Success)
+                {
+                    vars.ms_CONTROLDDNS = reply.RoundtripTime;
+                    vars.connection_CONTROLD = "TRUE";
+                    break;
+                }
+                else
+                {
+                    vars.connection_CONTROLD = "FALSE";
+                }
             }
-            else
+            catch (PingException)
             {
-                vars.connection_CONTROLD = "FALSE";
+                vars.connection_CONTROLD = "TIMEOUT";
             }
-        }
-        catch (PingException)
-        {
-            vars.connection_CONTROLD = "TIMEOUT";
         }
     }
 }
@@ -413,9 +433,9 @@ class choices
         Console.WriteLine($"\n{self_console.oNumber(0)}Turn Back.");
         Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
         Console.Write("\nEnter A Number: ".Pastel("ff0000"));
-        string c =Console.ReadLine();
+        string c = Console.ReadLine();
         self_console.exit_choice(c);
-    }  
+    }
     public static void cname2()
     {
         Console.Clear();
@@ -426,10 +446,11 @@ class choices
         Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
         Console.Write("\nEnter A Number: ".Pastel("ff0000"));
         string c = Console.ReadLine();
-        if(c == "0")
+        if (c == "0")
         {
             self_console.exit_choice(c);
-        } else if (c == "1")
+        }
+        else if (c == "1")
         {
             Console.Clear();
             Console.Write("Enter NEW Computer Name: ".Pastel("ff0000"));
@@ -442,10 +463,11 @@ class choices
                     Console.WriteLine("COMPUTER NAME CHANGED TO: ".Pastel("1dff00") + newc);
                     Console.WriteLine("\nRESTART REQUIRED, PRESS \"Y\" TO RESTART.".Pastel("ff0000"));
                     ConsoleKeyInfo r = Console.ReadKey();
-                    if(r.KeyChar == 'Y' || r.KeyChar == 'y')
+                    if (r.KeyChar == 'Y' || r.KeyChar == 'y')
                     {
                         Process.Start("shutdown", "/r /t 0");
-                    } else
+                    }
+                    else
                     {
                         Console.WriteLine(r);
                         Console.ReadKey();
@@ -468,7 +490,8 @@ class choices
                 Console.ReadLine();
                 self_consoleShows.info();
             }
-        } else
+        }
+        else
         {
             self_console.exit_choice(c);
         }
@@ -479,83 +502,114 @@ class choices
         string cloudflare = "";
         string controld = "";
         string quad9 = "";
+        string anim = "";
+        string animation = "-/|\\";
+        int animationLength = animation.Length;
+        int delay = 200;
+
 
         Thread googleDNStest = new Thread(self_info.googleDNS);
         Thread cloudflareDNStest = new Thread(self_info.cloudflareDNS);
         Thread controldDNStest = new Thread(self_info.controldDNS);
         Thread quad9DNStest = new Thread(self_info.quad9DNS);
 
-        googleDNStest.Start();
         cloudflareDNStest.Start();
         controldDNStest.Start();
         quad9DNStest.Start();
+        googleDNStest.Start();
+
         while (true)
         {
             if (vars.connection_GOOGLE == "TRUE")
             {
-                google = vars.ms_GOOGLEDNS.ToString();
+                google = vars.ms_GOOGLEDNS.ToString().Pastel("1dff00");
                 googleDNStest.Abort();
             }
             else if (vars.connection_GOOGLE == "TIMEOUT")
             {
-                google = "TIMED OUT!";
+                google = "TIMED OUT!".Pastel("ff0000");
             }
             else if (vars.connection_GOOGLE == "FALSE")
             {
-                google = "FAILED";
+                google = "FAILED".Pastel("ff0000");
             }
 
             if (vars.connection_CLOUDFLARE == "TRUE")
             {
-                cloudflare = vars.ms_CLOUDFLARE.ToString();
+                cloudflare = vars.ms_CLOUDFLARE.ToString().Pastel("1dff00");
                 cloudflareDNStest.Abort();
             }
             else if (vars.connection_CLOUDFLARE == "TIMEOUT")
             {
-                cloudflare = "TIMED OUT!";
+                cloudflare = "TIMED OUT!".Pastel("ff0000");
             }
             else if (vars.connection_CLOUDFLARE == "FALSE")
             {
-                cloudflare = "FAILED";
+                cloudflare = "FAILED".Pastel("ff0000");
             }
 
             if (vars.connection_QUAD9 == "TRUE")
             {
-                quad9 = vars.ms_QUAD9.ToString();
+                quad9 = vars.ms_QUAD9.ToString().Pastel("1dff00");
                 quad9DNStest.Abort();
             }
             else if (vars.connection_QUAD9 == "TIMEOUT")
             {
-                quad9 = "TIMED OUT!";
+                quad9 = "TIMED OUT!".Pastel("ff0000");
             }
             else if (vars.connection_QUAD9 == "FALSE")
             {
-                quad9 = "FAILED";
+                quad9 = "FAILED".Pastel("ff0000");
             }
 
             if (vars.connection_CONTROLD == "TRUE")
             {
-                controld = vars.ms_CONTROLDDNS.ToString();
+                controld = vars.ms_CONTROLDDNS.ToString().Pastel("1dff00");
                 controldDNStest.Abort();
             }
             else if (vars.connection_CONTROLD == "TIMEOUT")
             {
-                controld = "TIMED OUT!";
+                controld = "TIMED OUT!".Pastel("ff0000");
             }
             else if (vars.connection_CONTROLD == "FALSE")
             {
-                controld = "FAILED";
+                controld = "FAILED".Pastel("ff0000");
             }
-
-            Console.Clear();
-            Console.WriteLine("GOOGLE:" + google);
-            Console.WriteLine("CLOUDFLARE:" + cloudflare);
-            Console.WriteLine("CONTROLD:" + controld);
-            Console.WriteLine("QUAD9:" + quad9);
-            Thread.Sleep(1000);
+            if (google != "" && cloudflare != "" && controld != "" && quad9 != "")
+            {
+                break;
+            }
+            else
+            {
+                for (int i = 0; i < animationLength; i++)
+                {
+                    anim = ("" + animation[i]);
+                    Console.Clear();
+                    Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
+                    Console.WriteLine("GOOGLE: ".Pastel("c500ff") + anim);
+                    Console.WriteLine("CLOUDFLARE: ".Pastel("c500ff") + anim);
+                    Console.WriteLine("CONTROLD: ".Pastel("c500ff") + anim);
+                    Console.WriteLine("QUAD9: ".Pastel("c500ff") + anim);
+                    Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
+                    Thread.Sleep(delay);
+                }
+                if (google != "" && cloudflare != "" && controld != "" && quad9 != "")
+                {
+                    break;
+                }
+            }
         }
-
-        Console.ReadLine();
+        Console.Clear();
+        Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
+        Console.WriteLine("GOOGLE: ".Pastel("c500ff") + google);
+        Console.WriteLine("CLOUDFLARE: ".Pastel("c500ff") + cloudflare);
+        Console.WriteLine("CONTROLD: ".Pastel("c500ff") + controld);
+        Console.WriteLine("QUAD9: ".Pastel("c500ff") + quad9);
+        Console.WriteLine($"\n{self_console.oNumber(0)}Turn Back.");
+        Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
+        Console.Write("\nEnter A Number: ".Pastel("ff0000"));
+        string c = Console.ReadLine();
+        self_console.exit_choice(c);
     }
 
 }
