@@ -30,7 +30,19 @@ class Program
 
 class vars
 {
-    public const int        CNPDH                      = 5;
+    public const int        CNPDH                       = 5;
+    static public string    ip_GOOGLEDNS                = "8.8.8.8";
+    static public string    ip_CLOUDFLAREDNS            = "1.1.1.1";
+    static public string    ip_CONTROLDDNS              = "76.76.2.0";
+    static public string    ip_QUAD9                    = "9.9.9.9";
+    static public double    ms_GOOGLEDNS                = 1;
+    static public double    ms_CLOUDFLARE               = 1;
+    static public double    ms_CONTROLDDNS              = 1;
+    static public double    ms_QUAD9                    = 1;
+    static public string    connection_GOOGLE           = "NULL";
+    static public string    connection_CLOUDFLARE       = "NULL";
+    static public string    connection_CONTROLD         = "NULL";
+    static public string    connection_QUAD9            = "NULL";    
     static public int       consoleW                    = 1000;
     static public int       consoleH                    = 1000;
     static public string    user                        = self_info.user();
@@ -66,6 +78,9 @@ class self_console
                 break;
             case "2":
                 choices.cname2();
+                break;
+            case "3":
+                choices.connection3();
                 break;
         }
     }
@@ -292,6 +307,97 @@ class self_info
         }
         return users;
     }
+    public static void googleDNS()
+    {
+        string host = vars.ip_GOOGLEDNS;
+        try
+        {
+            Ping pingSender = new Ping();
+            PingReply reply = pingSender.Send(host);
+
+            if (reply.Status == IPStatus.Success)
+            {
+                vars.ms_GOOGLEDNS = reply.RoundtripTime;
+                vars.connection_GOOGLE = "TRUE";
+            }
+            else
+            {
+                vars.connection_GOOGLE = "FALSE";
+            }
+        } catch (PingException)
+        {
+            vars.connection_GOOGLE = "TIMEOUT";
+        }
+    }
+    public static void cloudflareDNS()
+    {
+        string host = vars.ip_CLOUDFLAREDNS;
+        try
+        {
+            Ping pingSender = new Ping();
+            PingReply reply = pingSender.Send(host);
+
+            if (reply.Status == IPStatus.Success)
+            {
+                vars.ms_CLOUDFLARE = reply.RoundtripTime;
+                vars.connection_CLOUDFLARE = "TRUE";
+            }
+            else
+            {
+                vars.connection_CLOUDFLARE = "FALSE";
+            }
+        }
+        catch (PingException)
+        {
+            vars.connection_CLOUDFLARE = "TIMEOUT";
+        }
+    }
+    public static void quad9DNS()
+    {
+        string host = vars.ip_QUAD9;
+        try
+        {
+            Ping pingSender = new Ping();
+            PingReply reply = pingSender.Send(host);
+
+            if (reply.Status == IPStatus.Success)
+            {
+                vars.ms_QUAD9 = reply.RoundtripTime;
+                vars.connection_QUAD9 = "TRUE";
+            }
+            else
+            {
+                vars.connection_QUAD9 = "FALSE";
+            }
+        }
+        catch (PingException)
+        {
+            vars.connection_QUAD9 = "TIMEOUT";
+        }
+    }
+    public static void controldDNS()
+    {
+        string host = vars.ip_CONTROLDDNS;
+        try
+        {
+            Ping pingSender = new Ping();
+            PingReply reply = pingSender.Send(host);
+
+            if (reply.Status == IPStatus.Success)
+            {
+                vars.ms_CONTROLDDNS = reply.RoundtripTime;
+                vars.connection_CONTROLD = "TRUE";
+            }
+            else
+            {
+                vars.connection_CONTROLD = "FALSE";
+            }
+        }
+        catch (PingException)
+        {
+            vars.connection_CONTROLD = "TIMEOUT";
+        }
+    }
 }
 class choices
 {
@@ -366,6 +472,90 @@ class choices
         {
             self_console.exit_choice(c);
         }
+    }
+    public static void connection3()
+    {
+        string google = "";
+        string cloudflare = "";
+        string controld = "";
+        string quad9 = "";
+
+        Thread googleDNStest = new Thread(self_info.googleDNS);
+        Thread cloudflareDNStest = new Thread(self_info.cloudflareDNS);
+        Thread controldDNStest = new Thread(self_info.controldDNS);
+        Thread quad9DNStest = new Thread(self_info.quad9DNS);
+
+        googleDNStest.Start();
+        cloudflareDNStest.Start();
+        controldDNStest.Start();
+        quad9DNStest.Start();
+        while (true)
+        {
+            if (vars.connection_GOOGLE == "TRUE")
+            {
+                google = vars.ms_GOOGLEDNS.ToString();
+                googleDNStest.Abort();
+            }
+            else if (vars.connection_GOOGLE == "TIMEOUT")
+            {
+                google = "TIMED OUT!";
+            }
+            else if (vars.connection_GOOGLE == "FALSE")
+            {
+                google = "FAILED";
+            }
+
+            if (vars.connection_CLOUDFLARE == "TRUE")
+            {
+                cloudflare = vars.ms_CLOUDFLARE.ToString();
+                cloudflareDNStest.Abort();
+            }
+            else if (vars.connection_CLOUDFLARE == "TIMEOUT")
+            {
+                cloudflare = "TIMED OUT!";
+            }
+            else if (vars.connection_CLOUDFLARE == "FALSE")
+            {
+                cloudflare = "FAILED";
+            }
+
+            if (vars.connection_QUAD9 == "TRUE")
+            {
+                quad9 = vars.ms_QUAD9.ToString();
+                quad9DNStest.Abort();
+            }
+            else if (vars.connection_QUAD9 == "TIMEOUT")
+            {
+                quad9 = "TIMED OUT!";
+            }
+            else if (vars.connection_QUAD9 == "FALSE")
+            {
+                quad9 = "FAILED";
+            }
+
+            if (vars.connection_CONTROLD == "TRUE")
+            {
+                controld = vars.ms_CONTROLDDNS.ToString();
+                controldDNStest.Abort();
+            }
+            else if (vars.connection_CONTROLD == "TIMEOUT")
+            {
+                controld = "TIMED OUT!";
+            }
+            else if (vars.connection_CONTROLD == "FALSE")
+            {
+                controld = "FAILED";
+            }
+
+            Console.Clear();
+            Console.WriteLine("GOOGLE:" + google);
+            Console.WriteLine("CLOUDFLARE:" + cloudflare);
+            Console.WriteLine("CONTROLD:" + controld);
+            Console.WriteLine("QUAD9:" + quad9);
+            Thread.Sleep(1000);
+        }
+
+        Console.ReadLine();
     }
 
 }
