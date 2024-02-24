@@ -10,12 +10,14 @@ using System.Diagnostics;
 using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
 class Program
 {
+
     static void Main(string[] args)
     {
         Console.Title = "T00LBOX | CREATED BY KENANWASTAKEN";
@@ -30,7 +32,7 @@ class Program
 class vars
 {
     public const int CNPDH = 5;
-    static public int ping_times = 5;
+    static public int ping_times = 1;
     static public string ip_GOOGLEDNS = "8.8.8.8";
     static public string ip_CLOUDFLAREDNS = "1.1.1.1";
     static public string ip_CONTROLDDNS = "76.76.2.0";
@@ -502,11 +504,13 @@ class choices
         string cloudflare = "";
         string controld = "";
         string quad9 = "";
-        string anim = "";
+        string animG = "";
+        string animC = "";
+        string anim9 = "";
+        string animD = "";
         string animation = "-/|\\";
         int animationLength = animation.Length;
         int delay = 200;
-
 
         Thread googleDNStest = new Thread(self_info.googleDNS);
         Thread cloudflareDNStest = new Thread(self_info.cloudflareDNS);
@@ -522,58 +526,54 @@ class choices
         {
             if (vars.connection_GOOGLE == "TRUE")
             {
-                google = vars.ms_GOOGLEDNS.ToString().Pastel("1dff00");
-                googleDNStest.Abort();
+                google = vars.ms_GOOGLEDNS.ToString().Pastel("1dff00"); googleDNStest.Abort();
             }
             else if (vars.connection_GOOGLE == "TIMEOUT")
             {
-                google = "TIMED OUT!".Pastel("ff0000");
+                google = "TIMED OUT!".Pastel("ff0000"); googleDNStest.Abort();
             }
             else if (vars.connection_GOOGLE == "FALSE")
             {
-                google = "FAILED".Pastel("ff0000");
+                google = "FAILED".Pastel("ff0000"); googleDNStest.Abort();
             }
 
             if (vars.connection_CLOUDFLARE == "TRUE")
             {
-                cloudflare = vars.ms_CLOUDFLARE.ToString().Pastel("1dff00");
-                cloudflareDNStest.Abort();
+                cloudflare = vars.ms_CLOUDFLARE.ToString().Pastel("1dff00"); cloudflareDNStest.Abort();
             }
             else if (vars.connection_CLOUDFLARE == "TIMEOUT")
             {
-                cloudflare = "TIMED OUT!".Pastel("ff0000");
+                cloudflare = "TIMED OUT!".Pastel("ff0000"); cloudflareDNStest.Abort();
             }
             else if (vars.connection_CLOUDFLARE == "FALSE")
             {
-                cloudflare = "FAILED".Pastel("ff0000");
+                cloudflare = "FAILED".Pastel("ff0000"); cloudflareDNStest.Abort();
             }
 
             if (vars.connection_QUAD9 == "TRUE")
             {
-                quad9 = vars.ms_QUAD9.ToString().Pastel("1dff00");
-                quad9DNStest.Abort();
+                quad9 = vars.ms_QUAD9.ToString().Pastel("1dff00"); quad9DNStest.Abort();
             }
             else if (vars.connection_QUAD9 == "TIMEOUT")
             {
-                quad9 = "TIMED OUT!".Pastel("ff0000");
+                quad9 = "TIMED OUT!".Pastel("ff0000"); quad9DNStest.Abort();
             }
             else if (vars.connection_QUAD9 == "FALSE")
             {
-                quad9 = "FAILED".Pastel("ff0000");
+                quad9 = "FAILED".Pastel("ff0000"); quad9DNStest.Abort();
             }
 
             if (vars.connection_CONTROLD == "TRUE")
             {
-                controld = vars.ms_CONTROLDDNS.ToString().Pastel("1dff00");
-                controldDNStest.Abort();
+                controld = vars.ms_CONTROLDDNS.ToString().Pastel("1dff00"); controldDNStest.Abort();
             }
             else if (vars.connection_CONTROLD == "TIMEOUT")
             {
-                controld = "TIMED OUT!".Pastel("ff0000");
+                controld = "TIMED OUT!".Pastel("ff0000"); controldDNStest.Abort();
             }
             else if (vars.connection_CONTROLD == "FALSE")
             {
-                controld = "FAILED".Pastel("ff0000");
+                controld = "FAILED".Pastel("ff0000"); controldDNStest.Abort();
             }
             if (google != "" && cloudflare != "" && controld != "" && quad9 != "")
             {
@@ -583,20 +583,50 @@ class choices
             {
                 for (int i = 0; i < animationLength; i++)
                 {
-                    anim = ("" + animation[i]);
+                    if (google == "")
+                    {
+                        animG = ("" + animation[i]);
+                    } else
+                    {
+                        animG = google;
+                    }
+                    if (cloudflare == "")
+                    {
+                        animC = ("" + animation[i]);
+                    }
+                    else
+                    {
+                        animC = cloudflare;
+                    }
+                    if (controld == "")
+                    {
+                        animD = ("" + animation[i]);
+                    }
+                    else
+                    {
+                        animD = controld;
+                    }
+                    if (quad9 == "")
+                    {
+                        anim9 = ("" + animation[i]);
+                    }
+                    else
+                    {
+                        anim9 = quad9;
+                    }
                     Console.Clear();
                     Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
-                    Console.WriteLine("GOOGLE: ".Pastel("c500ff") + anim);
-                    Console.WriteLine("CLOUDFLARE: ".Pastel("c500ff") + anim);
-                    Console.WriteLine("CONTROLD: ".Pastel("c500ff") + anim);
-                    Console.WriteLine("QUAD9: ".Pastel("c500ff") + anim);
+                    Console.WriteLine("GOOGLE: ".Pastel("c500ff") + animG);
+                    Console.WriteLine("CLOUDFLARE: ".Pastel("c500ff") + animC);
+                    Console.WriteLine("CONTROLD: ".Pastel("c500ff") + animD);
+                    Console.WriteLine("QUAD9: ".Pastel("c500ff") + anim9);
                     Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
                     Thread.Sleep(delay);
                 }
-                if (google != "" && cloudflare != "" && controld != "" && quad9 != "")
+                /*if (google != "" && cloudflare != "" && controld != "" && quad9 != "")
                 {
                     break;
-                }
+                }*/
             }
         }
         Console.Clear();
@@ -605,11 +635,28 @@ class choices
         Console.WriteLine("CLOUDFLARE: ".Pastel("c500ff") + cloudflare);
         Console.WriteLine("CONTROLD: ".Pastel("c500ff") + controld);
         Console.WriteLine("QUAD9: ".Pastel("c500ff") + quad9);
-        Console.WriteLine($"\n{self_console.oNumber(0)}Turn Back.");
+        Console.WriteLine($"\n{self_console.oNumber(1)}" + "Try Again.".Pastel("#f58142"));
+        Console.WriteLine($"\n{self_console.oNumber(0)}" + "Turn Back.".Pastel("#ff0000"));
         Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
         Console.Write("\nEnter A Number: ".Pastel("ff0000"));
         string c = Console.ReadLine();
-        self_console.exit_choice(c);
+        if(c == "1")
+        {
+            google = "";
+            quad9 = "";
+            controld = "";
+            cloudflare = "";
+            vars.ms_GOOGLEDNS = 1;
+            vars.ms_CLOUDFLARE = 1;
+            vars.ms_CONTROLDDNS = 1;
+            vars.ms_QUAD9 = 1;
+            vars.connection_GOOGLE = "NULL";
+            vars.connection_CLOUDFLARE = "NULL";
+            vars.connection_CONTROLD = "NULL";
+            vars.connection_QUAD9 = "NULL";
+            choices.connection3();
+        }
+
     }
 
 }
