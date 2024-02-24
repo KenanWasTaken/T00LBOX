@@ -655,6 +655,8 @@ class choices
             vars.connection_CONTROLD = "NULL";
             vars.connection_QUAD9 = "NULL";
             choices.connection3();
+        } else {
+            self_console.exit_choice(c);
         }
 
     }
