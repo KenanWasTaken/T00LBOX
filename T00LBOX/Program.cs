@@ -620,7 +620,7 @@ class self_info
 }
 class choices
 {
-    //HOLY FUCK IM NOT DOIN DAT 😭
+    //HOLY FUCK IM NOT DOIN DAT 😭 (i did it i think 26.02.2024)
     public static void user1()
     {
         Console.Clear();
