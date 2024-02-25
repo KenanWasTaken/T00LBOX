@@ -617,6 +617,26 @@ class self_info
             }
         }
     }
+    public static string getWifiPasswd(string ssid)
+    {
+        Process process = new Process();
+        string output = "";
+        string pattern = @"Key Content\s+:\s+(\S+)";
+
+        process.StartInfo.FileName = "cmd.exe"; // Command prompt
+        process.StartInfo.Arguments = $"/c netsh wlan show profiles {ssid} key=clear"; // Command to execute
+        process.StartInfo.UseShellExecute = false; // Redirect output
+        process.StartInfo.RedirectStandardOutput = true; // Capture output
+        process.StartInfo.CreateNoWindow = true; // Do not create window
+        process.Start();
+        process.OutputDataReceived += (sender, e) => output = e.Data;
+        process.BeginOutputReadLine();
+        process.WaitForExit();
+
+
+
+        return "nigga";
+    }
 }
 class choices
 {
@@ -830,12 +850,14 @@ class choices
             }
         }
         Console.Clear();
-        Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
+        Console.WriteLine($"{new string('▬', 120)}\n".Pastel("#ffffff"));
+        Console.WriteLine("-----CHECK CONNECTION-----".Pastel("#ffffff")); 
         Console.WriteLine("GOOGLE: ".Pastel("c500ff") + google);
         Console.WriteLine("CLOUDFLARE: ".Pastel("c500ff") + cloudflare);
         Console.WriteLine("CONTROLD: ".Pastel("c500ff") + controld);
         Console.WriteLine("QUAD9: ".Pastel("c500ff") + quad9);
         Console.WriteLine($"\n{self_console.oNumber(1)}" + "Try Again.".Pastel("#f58142"));
+        Console.WriteLine("--------------------------".Pastel("#ffffff"));
         Console.WriteLine($"\n{self_console.oNumber(0)}" + "Turn Back.".Pastel("#ff0000"));
         Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
         Console.Write("\nEnter A Number: ".Pastel("ff0000"));
