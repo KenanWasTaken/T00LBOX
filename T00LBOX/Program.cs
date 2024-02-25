@@ -131,7 +131,7 @@ class self_consoleShows
         Console.WriteLine($"{self_console.oNumber(3)}CONNECTION: " + $"{vars.isInternet}".Pastel("#ff0000"));
         Console.WriteLine($"{self_console.oNumber(4)}OS:   " + $" {vars.GetWindowsEdition} ".Pastel("#ffffff").PastelBg("#000fff") + $" {vars.GetWindowsVersion} ".Pastel("#000000").PastelBg("#f000ff") + $" {vars.GetWindowsBuildVersion} ".Pastel("#000000").PastelBg("#ff9700") + $" {vars.GetWindowsArchitecture} ".Pastel("#ffffff").PastelBg("#ff0000"));
         Console.WriteLine($"{self_console.oNumber(5)}CPU:  " + $"{vars.cpu}".Pastel("#ff0000"));
-        Console.WriteLine($"{self_console.oNumber(6)}RAM:  " + $"{vars.ram}".Pastel("#ff0000") + $" ({Convert.ToInt32(god_i_hate_math.ConvertMegabytesToGigabytes(vars.i_ram))} GB)".Pastel("#ffffff"));
+        Console.WriteLine($"{self_console.oNumber(6)}RAM:  " + $"{vars.ram}".Pastel("#ff0000") + $" ({Convert.ToInt32(god_i_hate_math.MbToGb(vars.i_ram))} GB)".Pastel("#ffffff"));
         Console.Write($"{self_console.oNumber(7)}GPU:  " + $"{vars.gpu}".Pastel("#ff0000"));
         Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
         Console.Write("\nEnter A Number: ".Pastel("ff0000"));
@@ -284,8 +284,20 @@ class self_info
     }
     public static string GetWindowsEdition()
     {
-        string edition = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName", "");
-        return edition;
+        string w = "";
+        try
+        {
+            ManagementObjectSearcher searcher =
+            new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+            foreach (ManagementObject os in searcher.Get())
+            {
+                w = (string)os["Caption"];
+            }
+        } catch (Exception e)
+        {
+            w = "ERROR!";
+        }
+        return w;
     }
     public static string GetWindowsVersion()
     {
@@ -301,6 +313,152 @@ class self_info
     {
         string architecture = Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit";
         return architecture;
+    }
+    public static string GetManufacturer()
+    {
+        string w = "";
+        try
+        {
+            ManagementObjectSearcher searcher =
+            new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+            foreach (ManagementObject os in searcher.Get())
+            {
+                w = (string)os["Manufacturer"];
+            }
+        }
+        catch (Exception e)
+        {
+            w = "ERROR!";
+        }
+        return w;
+    }
+    public static string GetInstallDate()
+    {
+        string w = "";
+        try
+        {
+            ManagementObjectSearcher searcher =
+            new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+            foreach (ManagementObject os in searcher.Get())
+            {
+                string installDate = os["InstallDate"].ToString();
+                DateTime parsedInstallDate = ManagementDateTimeConverter.ToDateTime(installDate);
+                w = (string)parsedInstallDate.ToString();
+            }
+        }
+        catch (Exception e)
+        {
+            w = "ERROR!";
+        }
+        return w;
+    }
+    public static string GetRegUser()
+    {
+        string w = "";
+        try
+        {
+            ManagementObjectSearcher searcher =
+            new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+            foreach (ManagementObject os in searcher.Get())
+            {
+                w = (string)os["RegisteredUser"];
+            }
+        }
+        catch (Exception e)
+        {
+            w = "ERROR!";
+        }
+        return w;
+    }
+    public static string GetSerialNumber()
+    {
+        string w = "";
+        try
+        {
+            ManagementObjectSearcher searcher =
+            new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+            foreach (ManagementObject os in searcher.Get())
+            {
+                w = (string)os["SerialNumber"];
+            }
+        }
+        catch (Exception e)
+        {
+            w = "ERROR!";
+        }
+        return w;
+    }
+    public static string GetSysDir()
+    {
+        string w = "";
+        try
+        {
+            ManagementObjectSearcher searcher =
+            new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+            foreach (ManagementObject os in searcher.Get())
+            {
+                w = (string)os["SerialNumber"];
+            }
+        }
+        catch (Exception e)
+        {
+            w = "ERROR!";
+        }
+        return w;
+    }
+    public static string GetBootDevice()
+    {
+        string w = "";
+        try
+        {
+            ManagementObjectSearcher searcher =
+            new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+            foreach (ManagementObject os in searcher.Get())
+            {
+                w = (string)os["BootDevice"];
+            }
+        }
+        catch (Exception e)
+        {
+            w = "ERROR!";
+        }
+        return w;
+    }
+    public static string GetCCode()
+    {
+        string w = "";
+        try
+        {
+            ManagementObjectSearcher searcher =
+            new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+            foreach (ManagementObject os in searcher.Get())
+            {
+                w = (string)os["CountryCode"];
+            }
+        }
+        catch (Exception e)
+        {
+            w = "ERROR!";
+        }
+        return w;
+    }
+    public static string LastBoot()
+    {
+        string w = "";
+        try
+        {
+            ManagementObjectSearcher searcher =
+            new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+            foreach (ManagementObject os in searcher.Get())
+            {
+                w = ManagementDateTimeConverter.ToDateTime(os["LastBootUpTime"].ToString()).ToString();
+            }
+        }
+        catch (Exception e)
+        {
+            w = "ERROR!";
+        }
+        return w;
     }
     public static string userList()
     {
@@ -660,13 +818,25 @@ class choices
         }
 
     }
+    public static void os4()
+    {
 
+    }
 }
 class god_i_hate_math
 {
-    public static double ConvertMegabytesToGigabytes(int megabytes)
+    public static double MbToGb(int megabytes)
     {
         double gigabytes = megabytes / 1024.0; // 1 GB = 1024 MB
         return gigabytes;
+    }
+    static double BytesToGB(long bytes)
+    {
+        /*            
+         *            BYTES 
+         * GB = -----------------
+         *       1024.1024.1024
+        */
+        return (double)bytes / (1024 * 1024 * 1024);
     }
 }
