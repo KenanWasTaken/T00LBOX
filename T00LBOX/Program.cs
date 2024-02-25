@@ -10,22 +10,25 @@ using System.Diagnostics;
 using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 class Program
 {
-
     static void Main(string[] args)
     {
-        Console.Title = "T00LBOX | CREATED BY KENANWASTAKEN";
+        Thread animationThread = new Thread(() => self_consoleShows.t1tle("                                                                                                                  T00LBOX | CREATED BY KENANWASTAKEN                                                                       ", 10));
+        animationThread.Start();
         IntPtr ptr = self_console.GetConsoleWindow();
         self_console.MoveWindow(ptr, self_screen.screenCenterX(), self_screen.screenCenterY(), vars.consoleW, vars.consoleH, true);
         self_consoleShows.creator();
         self_consoleShows.t00lbox();
         self_consoleShows.info();
+
     }
 }
 
@@ -34,6 +37,8 @@ class vars
     //APP
     static public string appversion = "0.2.2";
 
+    static public int cursorx = Console.CursorLeft;
+    static public int cursory = Console.CursorTop;
     public const int CNPDH = 5;
     static public int ping_times = 1;
     static public string ip_GOOGLEDNS = "8.8.8.8";
@@ -172,6 +177,22 @@ class self_consoleShows
         }
         Thread.Sleep(500);
         */
+    }
+    public static void t1tle(string text, int delay)
+    {
+        while (true)
+        {
+            for (int i = 1; i <= text.Length; i++)
+            {
+                Console.Title = text.Substring(0, i);
+                Thread.Sleep(delay);
+            }
+            for (int i = text.Length; i >= 0; i--)
+            {
+                Console.Title = text.Substring(0, i);
+                Thread.Sleep(delay);
+            }
+        }
     }
 }
 class self_screen
