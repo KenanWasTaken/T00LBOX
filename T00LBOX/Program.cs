@@ -13,6 +13,7 @@ using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
@@ -620,22 +621,34 @@ class self_info
     public static string getWifiPasswd(string ssid)
     {
         Process process = new Process();
-        string output = "";
         string pattern = @"Key Content\s+:\s+(\S+)";
 
-        process.StartInfo.FileName = "cmd.exe"; // Command prompt
-        process.StartInfo.Arguments = $"/c netsh wlan show profiles {ssid} key=clear"; // Command to execute
-        process.StartInfo.UseShellExecute = false; // Redirect output
-        process.StartInfo.RedirectStandardOutput = true; // Capture output
-        process.StartInfo.CreateNoWindow = true; // Do not create window
+        process.StartInfo.FileName = "cmd.exe";
+        process.StartInfo.Arguments = $"/c netsh wlan show profiles \"{ssid}\" key=clear";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.CreateNoWindow = true;
         process.Start();
-        process.OutputDataReceived += (sender, e) => output = e.Data;
-        process.BeginOutputReadLine();
+
+        string output = process.StandardOutput.ReadToEnd(); // Read the output after process completion
+
         process.WaitForExit();
 
+        Regex regex = new Regex(pattern);
+        Match match = regex.Match(output);
+        if (match.Success)
+        {
+            string result = match.Groups[1].Value;
 
+            int index = result.IndexOf(":") + 1;
 
-        return "nigga";
+            string result2 = result.Substring(index);
+            return result2;
+        }
+        else
+        {
+            return "SSID NOT FOUND...";
+        }
     }
 }
 class choices
@@ -859,6 +872,7 @@ class choices
         Console.WriteLine($"\n{self_console.oNumber(1)}" + "Try Again.".Pastel("#f58142"));
         Console.WriteLine("--------------------------".Pastel("#ffffff"));
         Console.WriteLine($"\n{self_console.oNumber(0)}" + "Turn Back.".Pastel("#ff0000"));
+        Console.WriteLine($"{self_info.getWifiPasswd("SUPERONLINE_WiFi_4413")}");
         Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
         Console.Write("\nEnter A Number: ".Pastel("ff0000"));
         string c = Console.ReadLine();
