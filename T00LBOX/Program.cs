@@ -60,6 +60,13 @@ class vars
     static public string gpu = self_info.gpu(true);
     static public string gpuD = self_info.gpu(false);
     static public string users = self_info.userList();
+    static public string manufacturer = self_info.GetManufacturer();
+    static public string installdate = self_info.GetInstallDate();
+    static public string reguser = self_info.GetRegUser();
+    static public string serialnumber = self_info.GetSerialNumber();
+    static public string sysdir = self_info.GetSysDir();
+    static public string bootdevice = self_info.GetBootDevice();
+    static public string countrycode = self_info.GetCCode();
 }
 class self_console
 {
@@ -679,7 +686,13 @@ class choices
         controldDNStest.Start();
         quad9DNStest.Start();
         googleDNStest.Start();
-
+        Console.Clear();
+        Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
+        Console.WriteLine("GOOGLE: ".Pastel("c500ff"));
+        Console.WriteLine("CLOUDFLARE: ".Pastel("c500ff"));
+        Console.WriteLine("CONTROLD: ".Pastel("c500ff"));
+        Console.WriteLine("QUAD9: ".Pastel("c500ff"));
+        Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
         while (true)
         {
             if (vars.connection_GOOGLE == "TRUE")
@@ -772,13 +785,10 @@ class choices
                     {
                         anim9 = quad9;
                     }
-                    Console.Clear();
-                    Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
-                    Console.WriteLine("GOOGLE: ".Pastel("c500ff") + animG);
-                    Console.WriteLine("CLOUDFLARE: ".Pastel("c500ff") + animC);
-                    Console.WriteLine("CONTROLD: ".Pastel("c500ff") + animD);
-                    Console.WriteLine("QUAD9: ".Pastel("c500ff") + anim9);
-                    Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
+                    Console.SetCursorPosition(8, 1); Console.Write(animG);
+                    Console.SetCursorPosition(12, 2); Console.Write(animC);
+                    Console.SetCursorPosition(10, 3); Console.Write(animD);
+                    Console.SetCursorPosition(7, 4); Console.Write(anim9);
                     Thread.Sleep(delay);
                 }
                 /*if (google != "" && cloudflare != "" && controld != "" && quad9 != "")
