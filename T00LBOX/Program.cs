@@ -7,12 +7,14 @@ using Microsoft.Win32;
 using Pastel;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
@@ -650,6 +652,38 @@ class self_info
             return "SSID NOT FOUND...";
         }
     }
+    public static string GetSsid()
+    {
+        string ssid = "";
+        Process process = new Process();
+        process.StartInfo.FileName = "netsh";
+        process.StartInfo.Arguments = "wlan show interfaces";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.CreateNoWindow = true;
+        process.Start();
+
+        using (StreamReader reader = process.StandardOutput)
+        {
+            string result = reader.ReadToEnd();
+            int ssidIndex = result.IndexOf("SSID", StringComparison.OrdinalIgnoreCase);
+            if (ssidIndex != -1)
+            {
+                int colonIndex = result.IndexOf(':', ssidIndex);
+                if (colonIndex != -1)
+                {
+                    int lineBreakIndex = result.IndexOfAny(new char[] { '\r', '\n' }, colonIndex);
+                    if (lineBreakIndex != -1)
+                    {
+                        ssid = result.Substring(colonIndex + 1, lineBreakIndex - colonIndex - 1).Trim();
+                    }
+                }
+            }
+        }
+
+        process.WaitForExit();
+        return ssid;
+    }
 }
 class choices
 {
@@ -871,8 +905,8 @@ class choices
         Console.WriteLine("QUAD9: ".Pastel("c500ff") + quad9);
         Console.WriteLine($"\n{self_console.oNumber(1)}" + "Try Again.".Pastel("#f58142"));
         Console.WriteLine("--------------------------".Pastel("#ffffff"));
+        Console.WriteLine($"\n{self_console.oNumber(2)}" + self_info.GetSsid().Pastel("#ff0000") + " Settings.");
         Console.WriteLine($"\n{self_console.oNumber(0)}" + "Turn Back.".Pastel("#ff0000"));
-        Console.WriteLine($"{self_info.getWifiPasswd("SUPERONLINE_WiFi_4413")}");
         Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
         Console.Write("\nEnter A Number: ".Pastel("ff0000"));
         string c = Console.ReadLine();
@@ -891,10 +925,35 @@ class choices
             vars.connection_CONTROLD = "NULL";
             vars.connection_QUAD9 = "NULL";
             choices.connection3();
-        } else {
-            self_console.exit_choice(c);
+        }
+        if(c == "2")
+        {
+            connection_wifi();
+        }
+        if(c == "0")
+        {
+            self_consoleShows.info();
         }
 
+    }
+    public static void connection_wifi()
+    {
+        Console.Clear();
+        self_consoleShows.t00lbox();
+        string ssid = self_info.GetSsid().Pastel("ffffff");
+        string passwd = self_info.getWifiPasswd(self_info.GetSsid()).Pastel("ffffff");
+        Console.Clear();
+        Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
+        Console.WriteLine("SSID: ".Pastel("c500ff") + ssid);
+        Console.WriteLine("Password: ".Pastel("c500ff") + passwd);
+        Console.WriteLine($"\n{self_console.oNumber(0)}" + "Turn Back.".Pastel("#ff0000"));
+        Console.WriteLine($"{new string('▬', 120)}\n".Pastel("#ffffff"));
+        Console.Write("\nEnter A Number: ".Pastel("ff0000"));
+        string c = Console.ReadLine();
+        if (c == "0")
+        {
+            choices.connection3();
+        }
     }
     public static void os4()
     {
