@@ -31,6 +31,9 @@ class Program
 
 class vars
 {
+    //APP
+    static public string appversion = "0.2.2";
+
     public const int CNPDH = 5;
     static public int ping_times = 1;
     static public string ip_GOOGLEDNS = "8.8.8.8";
@@ -142,6 +145,11 @@ class self_consoleShows
         Console.Write($"{self_console.oNumber(7)}GPU:  " + $"{vars.gpu}".Pastel("#ff0000"));
         Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
         Console.Write("\nEnter A Number: ".Pastel("ff0000"));
+        Console.SetCursorPosition(0, 58);
+        Console.WriteLine($"v{vars.appversion}".Pastel("#000000").PastelBg("#ffffff"));
+        Console.SetCursorPosition(93, 58);
+        Console.WriteLine($" CREATED BY ".Pastel("#000000").PastelBg("#ffffff") + " KENANWASTAKEN ".Pastel("#ffffff").PastelBg("#ff0000"));
+        Console.SetCursorPosition(16, 8);
         string choice = Console.ReadLine();
         self_console.choice(choice);
     }
