@@ -7,12 +7,15 @@ using Microsoft.Win32;
 using Pastel;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
@@ -120,6 +123,33 @@ class self_console
                 self_consoleShows.info();
                 break;
         }
+    }
+    public static void internetreset()
+    {
+        string command = "netsh winsock reset & netsh int ip reset & ipconfig /release & ipconfig /renew & ipconfig /flushdns";
+
+        
+        ProcessStartInfo psi = new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/c " + command,
+            Verb = "runas",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        Process process = new Process
+        {
+            StartInfo = psi
+        };
+        process.Start();
+
+        string output = process.StandardOutput.ReadToEnd();
+        Console.WriteLine(output.Pastel("#60f542"));
+        Thread.Sleep(2000);
+
+        process.WaitForExit();
     }
 }
 class self_consoleShows
@@ -332,7 +362,8 @@ class self_info
             {
                 w = (string)os["Caption"];
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             w = "ERROR!";
         }
@@ -617,10 +648,74 @@ class self_info
             }
         }
     }
+    public static string getWifiPasswd(string ssid)
+    {
+        Process process = new Process();
+        string pattern = @"Key Content\s+:\s+(\S+)";
+
+        process.StartInfo.FileName = "cmd.exe";
+        process.StartInfo.Arguments = $"/c netsh wlan show profiles \"{ssid}\" key=clear";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.CreateNoWindow = true;
+        process.Start();
+
+        string output = process.StandardOutput.ReadToEnd(); // Read the output after process completion
+
+        process.WaitForExit();
+
+        Regex regex = new Regex(pattern);
+        Match match = regex.Match(output);
+        if (match.Success)
+        {
+            string result = match.Groups[1].Value;
+
+            int index = result.IndexOf(":") + 1;
+
+            string result2 = result.Substring(index);
+            return result2;
+        }
+        else
+        {
+            return "SSID NOT FOUND...";
+        }
+    }
+    public static string GetSsid()
+    {
+        string ssid = "";
+        Process process = new Process();
+        process.StartInfo.FileName = "netsh";
+        process.StartInfo.Arguments = "wlan show interfaces";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.CreateNoWindow = true;
+        process.Start();
+
+        using (StreamReader reader = process.StandardOutput)
+        {
+            string result = reader.ReadToEnd();
+            int ssidIndex = result.IndexOf("SSID", StringComparison.OrdinalIgnoreCase);
+            if (ssidIndex != -1)
+            {
+                int colonIndex = result.IndexOf(':', ssidIndex);
+                if (colonIndex != -1)
+                {
+                    int lineBreakIndex = result.IndexOfAny(new char[] { '\r', '\n' }, colonIndex);
+                    if (lineBreakIndex != -1)
+                    {
+                        ssid = result.Substring(colonIndex + 1, lineBreakIndex - colonIndex - 1).Trim();
+                    }
+                }
+            }
+        }
+
+        process.WaitForExit();
+        return ssid;
+    }
 }
 class choices
 {
-    //HOLY FUCK IM NOT DOIN DAT 😭 (i did it i think 26.02.2024)
+    //HOLY FUCK IM NOT DOIN DAT 😭
     public static void user1()
     {
         Console.Clear();
@@ -789,7 +884,8 @@ class choices
                     if (google == "")
                     {
                         animG = ("" + animation[i]);
-                    } else
+                    }
+                    else
                     {
                         animG = google;
                     }
@@ -830,17 +926,21 @@ class choices
             }
         }
         Console.Clear();
-        Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
+        Console.WriteLine($"{new string('▬', 120)}\n".Pastel("#ffffff"));
+        Console.WriteLine("-----CHECK CONNECTION-----".Pastel("#ffffff"));
         Console.WriteLine("GOOGLE: ".Pastel("c500ff") + google);
         Console.WriteLine("CLOUDFLARE: ".Pastel("c500ff") + cloudflare);
         Console.WriteLine("CONTROLD: ".Pastel("c500ff") + controld);
         Console.WriteLine("QUAD9: ".Pastel("c500ff") + quad9);
         Console.WriteLine($"\n{self_console.oNumber(1)}" + "Try Again.".Pastel("#f58142"));
+        Console.WriteLine("--------------------------".Pastel("#ffffff"));
+        Console.WriteLine($"\n{self_console.oNumber(2)}" + self_info.GetSsid().Pastel("#ff0000") + " Settings.");
+        Console.WriteLine($"\n{self_console.oNumber(3)}" + "Reset Internet Adapters.".Pastel("#ff0000"));
         Console.WriteLine($"\n{self_console.oNumber(0)}" + "Turn Back.".Pastel("#ff0000"));
         Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
         Console.Write("\nEnter A Number: ".Pastel("ff0000"));
         string c = Console.ReadLine();
-        if(c == "1")
+        if (c == "1")
         {
             google = "";
             quad9 = "";
@@ -855,15 +955,83 @@ class choices
             vars.connection_CONTROLD = "NULL";
             vars.connection_QUAD9 = "NULL";
             choices.connection3();
-        } else {
-            self_console.exit_choice(c);
+        }
+        if (c == "2")
+        {
+            connection_wifi();
+        }
+        if(c == "3")
+        {
+            Console.Clear();
+            Console.WriteLine("Are Sure? This Will Require Reset. (y/n)".Pastel("#ff0000"));
+
+            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+
+            if (keyInfo.Key == ConsoleKey.Y)
+            {
+                Console.Clear();
+                self_console.internetreset();
+                Console.Clear();
+                Console.WriteLine("All Good. Do You Want To Reset Computer?");
+                ConsoleKeyInfo keyInfo2 = Console.ReadKey(true); 
+                if (keyInfo.Key == ConsoleKey.Y)
+                { 
+
+                }
+                else if (keyInfo.Key == ConsoleKey.N)
+                {
+                    Console.WriteLine("Canceled.".Pastel("ff0000"));
+                }
+                else
+                {
+                    Console.WriteLine("Aborted.".Pastel("ff0000"));
+                }
+            }
+            else if (keyInfo.Key == ConsoleKey.N)
+            {
+                Console.Clear();
+                Console.WriteLine("Canceled.".Pastel("ff0000"));
+                Thread.Sleep(1000);
+                choices.connection3();
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("Aborted.".Pastel("ff0000"));
+                Thread.Sleep(1000);
+                choices.connection3();
+            }
+        }
+        if (c == "0")
+        {
+            self_consoleShows.info();
         }
 
+    }
+    public static void connection_wifi()
+    {
+        Console.Clear();
+        self_consoleShows.t00lbox();
+        string ssid = self_info.GetSsid().Pastel("ffffff");
+        string passwd = self_info.getWifiPasswd(self_info.GetSsid()).Pastel("ffffff");
+        Console.Clear();
+        Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
+        Console.WriteLine("SSID:        ".Pastel("c500ff") + ssid);
+        Console.WriteLine("Password:    ".Pastel("c500ff") + passwd);
+        Console.WriteLine($"\n{self_console.oNumber(0)}" + "Turn Back.".Pastel("#ff0000"));
+        Console.WriteLine($"{new string('▬', 120)}\n".Pastel("#ffffff"));
+        Console.Write("\nEnter A Number: ".Pastel("ff0000"));
+        string c = Console.ReadLine();
+        if (c == "0")
+        {
+            choices.connection3();
+        }
     }
     public static void os4()
     {
         Console.Clear();
-        try {
+        try
+        {
             ManagementObjectSearcher searcher =
                                                 new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
 
@@ -873,33 +1041,33 @@ class choices
 
                 DateTime parsedInstallDate = ManagementDateTimeConverter.ToDateTime(installDate);
                 Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
-                Console.WriteLine($"\nName: ".Pastel("c500ff") +                    $"{os["Caption"]}");
-                Console.WriteLine($"Version: ".Pastel("c500ff") +                   $"{os["Version"]}");
-                Console.WriteLine($"Manufacturer: ".Pastel("c500ff") +              $"{os["Manufacturer"]}");
-                Console.WriteLine($"Installation Date: ".Pastel("c500ff") +         $"{parsedInstallDate}");
-                Console.WriteLine($"Architecture: ".Pastel("c500ff") +              $"{os["OSArchitecture"]}");
-                Console.WriteLine($"Registered User: ".Pastel("c500ff") +           $"{os["RegisteredUser"]}");
-                Console.WriteLine($"Serial Number: ".Pastel("c500ff") +             $"{os["SerialNumber"]}");
-                Console.WriteLine($"System Directory: ".Pastel("c500ff") +          $"{os["SystemDirectory"]}");
-                Console.WriteLine($"Boot Device: ".Pastel("c500ff") +               $"{os["BootDevice"]}");
-                Console.WriteLine($"Build Number: ".Pastel("c500ff") +              $"{os["BuildNumber"]}");
-                Console.WriteLine($"Country Code: ".Pastel("c500ff") +              $"{os["CountryCode"]}");
-                Console.WriteLine($"Current Time Zone: ".Pastel("c500ff") +         $"{os["CurrentTimeZone"]}");
-                Console.WriteLine($"Encryption Level: ".Pastel("c500ff") +          $"{os["EncryptionLevel"]}");
-                Console.WriteLine($"Free Physical Memory: ".Pastel("c500ff") +      $"{os["FreePhysicalMemory"]} bytes");
-                Console.WriteLine($"Free Virtual Memory: ".Pastel("c500ff") +       $"{os["FreeVirtualMemory"]} bytes");
-                Console.WriteLine($"Last Boot Up Time: ".Pastel("c500ff") +         $"{ManagementDateTimeConverter.ToDateTime(os["LastBootUpTime"].ToString())}");
-                Console.WriteLine($"Local Date Time: ".Pastel("c500ff") +           $"{ManagementDateTimeConverter.ToDateTime(os["LocalDateTime"].ToString())}");
-                Console.WriteLine($"Max Process Memory Size: ".Pastel("c500ff") +   $"{os["MaxProcessMemorySize"]} bytes");
-                Console.WriteLine($"Number of Processes: ".Pastel("c500ff") +       $"{os["NumberOfProcesses"]}");
-                Console.WriteLine($"Number of Users: ".Pastel("c500ff") +           $"{os["NumberOfUsers"]}");
-                Console.WriteLine($"OS Language: ".Pastel("c500ff") +               $"{os["OSLanguage"]}");
-                Console.WriteLine($"Product Type: ".Pastel("c500ff") +              $"{os["ProductType"]}");
-                Console.WriteLine($"Registered Domain: ".Pastel("c500ff") +         $"{os["RegisteredDomain"]}");
-                Console.WriteLine($"System Drive: ".Pastel("c500ff") +              $"{os["SystemDrive"]}");
-                Console.WriteLine($"Total Swap Space Size: ".Pastel("c500ff") +     $"{os["TotalSwapSpaceSize"]} bytes");
+                Console.WriteLine($"\nName: ".Pastel("c500ff") + $"{os["Caption"]}");
+                Console.WriteLine($"Version: ".Pastel("c500ff") + $"{os["Version"]}");
+                Console.WriteLine($"Manufacturer: ".Pastel("c500ff") + $"{os["Manufacturer"]}");
+                Console.WriteLine($"Installation Date: ".Pastel("c500ff") + $"{parsedInstallDate}");
+                Console.WriteLine($"Architecture: ".Pastel("c500ff") + $"{os["OSArchitecture"]}");
+                Console.WriteLine($"Registered User: ".Pastel("c500ff") + $"{os["RegisteredUser"]}");
+                Console.WriteLine($"Serial Number: ".Pastel("c500ff") + $"{os["SerialNumber"]}");
+                Console.WriteLine($"System Directory: ".Pastel("c500ff") + $"{os["SystemDirectory"]}");
+                Console.WriteLine($"Boot Device: ".Pastel("c500ff") + $"{os["BootDevice"]}");
+                Console.WriteLine($"Build Number: ".Pastel("c500ff") + $"{os["BuildNumber"]}");
+                Console.WriteLine($"Country Code: ".Pastel("c500ff") + $"{os["CountryCode"]}");
+                Console.WriteLine($"Current Time Zone: ".Pastel("c500ff") + $"{os["CurrentTimeZone"]}");
+                Console.WriteLine($"Encryption Level: ".Pastel("c500ff") + $"{os["EncryptionLevel"]}");
+                Console.WriteLine($"Free Physical Memory: ".Pastel("c500ff") + $"{os["FreePhysicalMemory"]} bytes");
+                Console.WriteLine($"Free Virtual Memory: ".Pastel("c500ff") + $"{os["FreeVirtualMemory"]} bytes");
+                Console.WriteLine($"Last Boot Up Time: ".Pastel("c500ff") + $"{ManagementDateTimeConverter.ToDateTime(os["LastBootUpTime"].ToString())}");
+                Console.WriteLine($"Local Date Time: ".Pastel("c500ff") + $"{ManagementDateTimeConverter.ToDateTime(os["LocalDateTime"].ToString())}");
+                Console.WriteLine($"Max Process Memory Size: ".Pastel("c500ff") + $"{os["MaxProcessMemorySize"]} bytes");
+                Console.WriteLine($"Number of Processes: ".Pastel("c500ff") + $"{os["NumberOfProcesses"]}");
+                Console.WriteLine($"Number of Users: ".Pastel("c500ff") + $"{os["NumberOfUsers"]}");
+                Console.WriteLine($"OS Language: ".Pastel("c500ff") + $"{os["OSLanguage"]}");
+                Console.WriteLine($"Product Type: ".Pastel("c500ff") + $"{os["ProductType"]}");
+                Console.WriteLine($"Registered Domain: ".Pastel("c500ff") + $"{os["RegisteredDomain"]}");
+                Console.WriteLine($"System Drive: ".Pastel("c500ff") + $"{os["SystemDrive"]}");
+                Console.WriteLine($"Total Swap Space Size: ".Pastel("c500ff") + $"{os["TotalSwapSpaceSize"]} bytes");
                 Console.WriteLine($"Total Virtual Memory Size: ".Pastel("c500ff") + $"{os["TotalVirtualMemorySize"]} bytes");
-                Console.WriteLine($"Windows Directory: ".Pastel("c500ff") +         $"{os["WindowsDirectory"]}");
+                Console.WriteLine($"Windows Directory: ".Pastel("c500ff") + $"{os["WindowsDirectory"]}");
                 Console.WriteLine($"\n{self_console.oNumber(0)}Turn Back.");
                 Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
                 Console.Write("\nEnter A Number: ".Pastel("ff0000"));
@@ -908,7 +1076,9 @@ class choices
                 Console.WriteLine($"{new string('▬', 120)}".Pastel("#ffffff"));
                 Console.ReadLine();
             }
-        } catch {
+        }
+        catch
+        {
             Console.WriteLine($"\n{self_console.oNumber(0)}Turn Back.");
             Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
             Console.Write("\nEnter A Number: ".Pastel("ff0000"));
