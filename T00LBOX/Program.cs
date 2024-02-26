@@ -151,6 +151,19 @@ class self_console
 
         process.WaitForExit();
     }
+    public static void pc_restart()
+    {
+        Process process = new Process();
+
+        process.StartInfo.FileName = "cmd.exe";
+        process.StartInfo.Arguments = $"/c shutdown -r -t 00";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.CreateNoWindow = true;
+        process.Start();
+        process.WaitForExit();
+    }
+
 }
 class self_consoleShows
 {
@@ -975,16 +988,20 @@ class choices
                 Console.WriteLine("All Good. Do You Want To Reset Computer?");
                 ConsoleKeyInfo keyInfo2 = Console.ReadKey(true); 
                 if (keyInfo.Key == ConsoleKey.Y)
-                { 
-
+                {
+                    self_console.pc_restart();
                 }
                 else if (keyInfo.Key == ConsoleKey.N)
                 {
                     Console.WriteLine("Canceled.".Pastel("ff0000"));
+                    Thread.Sleep(1000);
+                    choices.connection3();
                 }
                 else
                 {
                     Console.WriteLine("Aborted.".Pastel("ff0000"));
+                    Thread.Sleep(1000);
+                    choices.connection3();
                 }
             }
             else if (keyInfo.Key == ConsoleKey.N)
