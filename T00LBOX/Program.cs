@@ -163,7 +163,10 @@ class self_console
         process.Start();
         process.WaitForExit();
     }
+    public static void setMAC(string mac)
+    {
 
+    }
 }
 class self_consoleShows
 {
@@ -948,7 +951,8 @@ class choices
         Console.WriteLine($"\n{self_console.oNumber(1)}" + "Try Again.".Pastel("#f58142"));
         Console.WriteLine("--------------------------".Pastel("#ffffff"));
         Console.WriteLine($"\n{self_console.oNumber(2)}" + self_info.GetSsid().Pastel("#ff0000") + " Settings.");
-        Console.WriteLine($"\n{self_console.oNumber(3)}" + "Reset Internet Adapters.".Pastel("#ff0000"));
+        Console.WriteLine($"{self_console.oNumber(3)}" + "Reset Internet Adapters.".Pastel("#ff0000"));
+        Console.WriteLine($"{self_console.oNumber(4)}" + "Modify-Randomize MAC Address".Pastel("#ff0000"));
         Console.WriteLine($"\n{self_console.oNumber(0)}" + "Turn Back.".Pastel("#ff0000"));
         Console.WriteLine($"\n{new string('▬', 120)}".Pastel("#ffffff"));
         Console.Write("\nEnter A Number: ".Pastel("ff0000"));
@@ -973,7 +977,7 @@ class choices
         {
             connection_wifi();
         }
-        if(c == "3")
+        if (c == "3")
         {
             Console.Clear();
             Console.WriteLine("Are Sure? This Will Require Reset. (y/n)".Pastel("#ff0000"));
@@ -1017,6 +1021,23 @@ class choices
                 Console.WriteLine("Aborted.".Pastel("ff0000"));
                 Thread.Sleep(1000);
                 choices.connection3();
+            }
+        }
+        if (c == "4")
+        {
+            Console.Clear();
+            Console.WriteLine($"{self_console.oNumber(1)}" + "Modify Address MAC Address".Pastel("#ff0000"));
+            Console.WriteLine($"{self_console.oNumber(2)}" + "Randomize MAC Address".Pastel("#ff0000"));
+            Console.WriteLine($"\n{self_console.oNumber(0)}" + "Turn Back.".Pastel("#ff0000"));
+            Console.Write("\nEnter A Number: ".Pastel("ff0000"));
+            string c2 = Console.ReadLine();
+            if( c2 == "1")
+            {
+                Console.Clear();
+                Console.WriteLine("MAC ADDRESS FORMAT: ".Pastel("#5c5c5c") + "XX-XX-XX-XX-XX-XX\n".Pastel("#ff0000"));
+                Console.Write("Type NEW MAC Address: ".Pastel("#ffc800"));
+                string newmac = Console.ReadLine();
+                
             }
         }
         if (c == "0")
