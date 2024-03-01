@@ -125,47 +125,4 @@ class self_console
                 break;
         }
     }
-    public static void internetreset()
-    {
-        string command = "netsh winsock reset & netsh int ip reset & ipconfig /release & ipconfig /renew & ipconfig /flushdns";
-
-
-        ProcessStartInfo psi = new ProcessStartInfo
-        {
-            FileName = "cmd.exe",
-            Arguments = "/c " + command,
-            Verb = "runas",
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-
-        Process process = new Process
-        {
-            StartInfo = psi
-        };
-        process.Start();
-
-        string output = process.StandardOutput.ReadToEnd();
-        Console.WriteLine(output.Pastel("#60f542"));
-        Thread.Sleep(2000);
-
-        process.WaitForExit();
-    }
-    public static void pc_restart()
-    {
-        Process process = new Process();
-
-        process.StartInfo.FileName = "cmd.exe";
-        process.StartInfo.Arguments = $"/c shutdown -r -t 00";
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.CreateNoWindow = true;
-        process.Start();
-        process.WaitForExit();
-    }
-    public static void setMAC(string mac)
-    {
-
-    }
 }

@@ -8,6 +8,7 @@ using System.Management;
 using System.Net.NetworkInformation;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace INFO
 {
@@ -488,7 +489,25 @@ namespace INFO
 
             return adapterNames;
         }
+        public static string GetMacAddress(string adapterName)
+        {
+            try
+            {
+                NetworkInterface nic = NetworkInterface.GetAllNetworkInterfaces()
+                    .FirstOrDefault(n => n.Name == adapterName);
 
+                if (nic != null && nic.OperationalStatus == OperationalStatus.Up)
+                {
+                    return nic.GetPhysicalAddress().ToString();
+                }
+
+                return "Adapter not found or not operational: " + adapterName;
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
     }
 
 }
